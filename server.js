@@ -423,12 +423,13 @@ const server = createServer(async (req, res) => {
     } catch {
       return json(res, 404, { error: 'Not found' })
     }
-    // Without this a CDN applies its own default TTL to .css and .js and serves a stale
-    // page for hours after a deploy. These files are a few KB, so revalidating every time
-    // costs nothing worth having.
+    // The page itself must never be cached: it carries the story's metadata. Everything
+    // it pulls in can be, and should be, or one arrival costs six trips to this process
+    // instead of one. Five minutes is short enough that a fix still lands quickly.
+    const ext = extname(path)
     res.writeHead(200, {
-      'Content-Type': MIME[extname(path)] ?? 'text/plain',
-      'Cache-Control': 'no-cache, must-revalidate',
+      'Content-Type': MIME[ext] ?? 'text/plain',
+      'Cache-Control': ext === '.html' ? 'no-cache, must-revalidate' : 'public, max-age=300',
     })
     res.end(body)
   } catch (err) {

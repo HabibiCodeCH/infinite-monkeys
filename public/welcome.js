@@ -148,7 +148,7 @@ wordEl.addEventListener('click', () => {
   editor.className = 'demo-input demo-swap'
   editor.spellcheck = false
   editor.setAttribute('autocapitalize', 'off')
-  editor.value = wordEl.textContent.trim()
+  editor.value = wordEl.textContent.trim().toLowerCase()
   wordEl.after(editor)
   wordEl.hidden = true
   editor.focus()

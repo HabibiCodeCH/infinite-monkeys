@@ -22,11 +22,54 @@ const now = () => Date.now() + clockSkew
 
 // ---------------------------------------------------------------- rendering
 
-/** Capitalisation is applied here, so nobody ever has to type a capital. */
+// Apostrophes cannot be typed, so contractions arrive without one and are put back here,
+// the same way capitals are. Only where there is no real word to confuse it with: "its",
+// "were", "well", "ill", "hell", "shed", "wed", "id" and "lets" are all left alone,
+// because each is far more often itself than a contraction.
+const CONTRACTIONS = {
+  dont: "don't",
+  doesnt: "doesn't",
+  didnt: "didn't",
+  isnt: "isn't",
+  wasnt: "wasn't",
+  arent: "aren't",
+  werent: "weren't",
+  hasnt: "hasn't",
+  havent: "haven't",
+  hadnt: "hadn't",
+  couldnt: "couldn't",
+  shouldnt: "shouldn't",
+  wouldnt: "wouldn't",
+  mustnt: "mustn't",
+  cant: "can't", // the noun sense is archaic enough to ignore
+  wont: "won't", // as is "his wont"
+  im: "I'm",
+  ive: "I've",
+  youre: "you're",
+  youve: "you've",
+  youd: "you'd",
+  youll: "you'll",
+  theyre: "they're",
+  theyve: "they've",
+  theyd: "they'd",
+  theyll: "they'll",
+  weve: "we've",
+  whats: "what's",
+  thats: "that's",
+  wheres: "where's",
+  whos: "who's",
+  heres: "here's",
+  theres: "there's",
+  couldve: "could've",
+  shouldve: "should've",
+  wouldve: "would've",
+}
+
+/** Capitals and apostrophes are applied here, so nobody ever has to type either. */
 function display(word, index, words) {
   const previous = words[index - 1]
   const opensSentence = index === 0 || (previous && SENTENCE_END.has(previous.text))
-  let text = word.text === 'i' ? 'I' : word.text
+  let text = CONTRACTIONS[word.text] ?? (word.text === 'i' ? 'I' : word.text)
   if (opensSentence) text = text[0].toUpperCase() + text.slice(1)
   return text
 }
