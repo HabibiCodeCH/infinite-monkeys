@@ -143,6 +143,17 @@ body {
   font-variant-numeric: tabular-nums; /* the live figure changes, so hold the width */
 }
 
+/* In the rail the label leads and the number follows. Both labels are six characters in
+   the mono face, so the numbers line up under each other without being told to. */
+.count {
+  display: flex;
+  gap: 0.5ch;
+}
+
+.count > :first-child {
+  order: 2;
+}
+
 /* Sits under the counters, quieter still. Stacked in the rail, one line on mobile. */
 .promise {
   display: flex;
@@ -244,10 +255,19 @@ body {
      numbers grow leftwards into the gap instead of pushing anything about. */
   .counts {
     margin-left: auto;
-    text-align: right;
     font-size: 0.55rem;
     line-height: 1.5;
     color: #a8a8b3;
+  }
+
+  /* Value first here, and pushed right, so a growing number runs into the gap rather
+     than shifting the label. */
+  .count {
+    justify-content: flex-end;
+  }
+
+  .count > :first-child {
+    order: 0;
   }
 
   /* Anything too wordy for a phone. "3 authors online" becomes "3 online", and the

@@ -8,9 +8,7 @@ const statusEl = document.getElementById('status')
 const tipEl = document.getElementById('tip')
 const markEl = document.getElementById('mark')
 const liveEl = document.getElementById('live-count')
-const liveNounEl = document.getElementById('live-noun')
 const visitEl = document.getElementById('visit-count')
-const visitLabelEl = document.getElementById('visit-label')
 
 const PUNCTUATION = new Set(['.', ',', ';', ':', '!', '?'])
 const SENTENCE_END = new Set(['.', '!', '?'])
@@ -222,14 +220,8 @@ async function takeTurn(body) {
 function apply(data) {
   clockSkew = data.now - Date.now()
   state = data
-  if (typeof data.live === 'number') {
-    liveEl.textContent = data.live.toLocaleString()
-    liveNounEl.textContent = data.live === 1 ? 'author' : 'authors'
-  }
-  if (typeof data.visits === 'number') {
-    visitEl.textContent = data.visits.toLocaleString()
-    visitLabelEl.textContent = data.visits === 1 ? 'visit' : 'visits'
-  }
+  if (typeof data.live === 'number') liveEl.textContent = data.live.toLocaleString()
+  if (typeof data.visits === 'number') visitEl.textContent = data.visits.toLocaleString()
   render()
 }
 

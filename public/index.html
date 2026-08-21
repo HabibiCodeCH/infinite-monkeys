@@ -65,12 +65,11 @@
       <a class="byline" href="https://x.com/habibicode" target="_blank" rel="noopener me"
         >by Nicolas</a
       >
-      <!-- "authors" drops away on a phone, leaving "3 online", which is all the room
-           there is once the promise and the visit count are on the same band. -->
+      <!-- Value first in the markup, which is the order the phone wants. The rail flips
+           it with `order`, so it reads "online 3" there. -->
       <span class="counts">
-        <span><span id="live-count">–</span> <span id="live-noun" class="long">authors</span>
-          online</span>
-        <span><span id="visit-count">–</span> <span id="visit-label">visits</span></span>
+        <span class="count"><span id="live-count">–</span><span>online</span></span>
+        <span class="count"><span id="visit-count">–</span><span>visits</span></span>
       </span>
       <span class="promise">
         <span class="long">No account</span>
