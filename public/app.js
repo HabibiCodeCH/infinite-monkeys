@@ -7,6 +7,13 @@ const ruleEl = document.getElementById('rule')
 const statusEl = document.getElementById('status')
 const tipEl = document.getElementById('tip')
 const markEl = document.getElementById('mark')
+const tallyEls = {
+  cooldown: document.getElementById('n-cooldown'),
+  open: document.getElementById('n-open'),
+  setting: document.getElementById('n-setting'),
+  set: document.getElementById('n-set'),
+  kept: document.getElementById('n-kept'),
+}
 const liveEl = document.getElementById('live-count')
 const visitEl = document.getElementById('visit-count')
 
@@ -184,11 +191,22 @@ function render() {
 
 /** Moves words between states every second. Only touches classes, never the nodes. */
 function paint() {
+  const tally = { cooldown: 0, open: 0, setting: 0, set: 0, kept: 0 }
+
   state.words.forEach((word, i) => {
+    const status = stateOf(word)
+    // Counted from the story, not from the spans, so the figures hold even for a word
+    // that has been pulled out of the page to be edited.
+    if (status === 'set') tally.set += 1
+    if (status === 'held') tally.cooldown += 1
+    if (status === 'open') {
+      if (isEnding(word)) tally.setting += 1
+      else tally.open += 1
+    }
+    if ((word.highlights ?? 0) > 0) tally.kept += 1
+
     const el = wordEls[i]
     if (!el) return
-
-    const status = stateOf(word)
     el.classList.toggle('held', status === 'held')
     el.classList.toggle('open', status === 'open')
 
@@ -214,6 +232,8 @@ function paint() {
       else delete gap.dataset.marks
     }
   })
+
+  for (const [name, el] of Object.entries(tallyEls)) el.textContent = tally[name]
 }
 
 function updateStatus() {

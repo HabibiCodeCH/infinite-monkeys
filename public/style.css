@@ -546,6 +546,14 @@ body.cooldown .word.open:hover {
   white-space: nowrap;
 }
 
+/* How many words are in that state right now. Darker than the label so the figure is
+   what you read, and tabular so a changing number does not shuffle the row. */
+.key b {
+  font-weight: 400;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
 .explain {
   font: inherit;
   color: var(--ink);
@@ -728,6 +736,10 @@ body.cooldown .word.open:hover {
 
 .sw-cooldown {
   background: var(--magenta);
+}
+
+.sw-open {
+  background: var(--grey);
 }
 
 .sw-set {
