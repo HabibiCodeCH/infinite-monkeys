@@ -1,0 +1,13 @@
+# The dictionary is 3.7MB and rebuildable: node build-dictionary.js
+# story.db is the live story plus hashed visitor keys.
+data/
+
+.DS_Store
+
+# Working notes and the private spec, not part of the published project.
+PROJECT_STATE.md
+infinite-monkey.md
+
+# Deployment and asset generation. Specific to how this one is hosted, not part of
+# the published project.
+deploy/

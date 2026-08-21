@@ -1,0 +1,36 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 72 52"
+  width="72"
+  height="52"
+  fill="none"
+  stroke="#8e8e97"
+  stroke-width="1.7"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <title>A monkey hunched over a typewriter</title>
+
+  <!-- desk -->
+  <path d="M2 42h68" />
+
+  <!-- typewriter: sloped body, key row, sheet of paper -->
+  <path d="M43 42v-3l5-4h16v7" />
+  <path d="M46 39h15" />
+  <path d="M57 35v-9" />
+
+  <!-- the hunch: back over the top, belly closing the torso -->
+  <path d="M16 42c-3-12 1-20 11-22" />
+  <path d="M16 42c7-1 10-6 10-11" />
+
+  <!-- head bowed towards the keys, with an ear and a snout -->
+  <circle cx="32" cy="18" r="5" />
+  <circle cx="29" cy="13" r="1.8" />
+  <path d="M36 20c2.5.6 2.5 3.4 0 4" />
+
+  <!-- one long arm down to the keys -->
+  <path d="M28 23c1 7 9 12 18 14" />
+
+  <!-- tail, curled -->
+  <path d="M16 41c-7 1-10-3-7-6 2-2 5-1 4 2" />
+</svg>

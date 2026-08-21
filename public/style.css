@@ -1,0 +1,796 @@
+/* Every colour is a token, so dark mode is a second set of values rather than a pile of
+   overrides. Nothing below this block names a colour directly. */
+:root {
+  --page: #ffffff; /* the paper */
+  --paper: #ffffff; /* panels that sit on it */
+  --ink: #16161a; /* set, permanent */
+  --grey: #a6a6ad; /* still inside the set window */
+  --magenta: #ff00ff; /* just changed, cannot change again yet */
+  --wash: #ffd6f7; /* the blink behind a word in its last seconds */
+  --faint: #6f6f78; /* the rail: name */
+  --quiet: #8e8e97; /* the rail: counters */
+  --hush: #a8a8ae; /* the rail: promise */
+  --rule: #e6e6ea;
+  --wrong: #a4423a;
+  --scrim: rgba(255, 255, 255, 0.86);
+  --band: #16161a; /* the mobile header bar */
+  --band-text: #ffffff;
+
+  /* Highlights, deepening with the number of people who kept the passage. */
+  --keep-1: #fff2cc;
+  --keep-2: #ffe69e;
+  --keep-3: #ffda70;
+  --keep-4: #ffcf47;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+}
+
+/* Two selectors, one set of values: the system preference unless the reader has chosen
+   light, and the reader's own choice whichever way it goes. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #101014;
+    --paper: #17171c;
+    --ink: #eaeaef;
+    --grey: #9494a0;
+    --magenta: #ff5cf0; /* pure magenta glares on black */
+    --wash: #701a68;
+    --faint: #9a9aa4;
+    --quiet: #7e7e88;
+    --hush: #66666f;
+    --rule: #2b2b33;
+    --wrong: #e0776c;
+    --scrim: rgba(10, 10, 13, 0.88);
+    --band: #08080b;
+    --band-text: #eaeaef;
+
+    /* Mint rather than yellow, taken dark so the words on it keep their light ink. */
+    --keep-1: #192e27;
+    --keep-2: #1e4336;
+    --keep-3: #225b47;
+    --keep-4: #247b5c;
+  }
+}
+
+:root[data-theme="dark"] {
+  --page: #101014;
+  --paper: #17171c;
+  --ink: #eaeaef;
+  --grey: #9494a0;
+  --magenta: #ff5cf0;
+  --wash: #701a68;
+  --faint: #9a9aa4;
+  --quiet: #7e7e88;
+  --hush: #66666f;
+  --rule: #2b2b33;
+  --wrong: #e0776c;
+  --scrim: rgba(10, 10, 13, 0.88);
+  --band: #08080b;
+  --band-text: #eaeaef;
+  --keep-1: #192e27;
+  --keep-2: #1e4336;
+  --keep-3: #225b47;
+  --keep-4: #247b5c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+}
+
+/* The left rail is a fixed width and always there. The same width is reserved on the
+   right so the text stays centred on screen, and the text column takes whatever is left,
+   collapsing as the window narrows rather than pushing the rail around.
+   Half a screen above and below is what lets the last line sit at the exact middle. */
+:root {
+  --rail: 12rem;
+}
+
+body {
+  /* Small at the top so the story cannot be scrolled off into empty space. Half a screen
+     at the bottom is what still lets the last line reach the middle. */
+  padding: 6rem var(--rail) 50vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The measure is set in ch so it means what it says: about 70 characters, which lands at
+   10 to 12 words a line. The serif has to live here rather than on .sheet, because ch is
+   relative to the font of the element the max-width is on. */
+/* Sits in the rail, which is reserved for it, so it never meets the text. Fixed rather
+   than in the flow because the story scrolls past it, and in the flow it would sit above
+   half a screen of padding, visible only if you scrolled to the very top. */
+.title {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--rail);
+  z-index: 3;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 1.6rem 1rem 1.6rem 1.6rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  line-height: 1.6;
+  color: var(--faint);
+  pointer-events: none; /* never in the way of selecting the first line */
+}
+
+.wordmark span {
+  display: block;
+}
+
+/* Sits under the name, quieter than it. */
+.counts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--quiet);
+  font-variant-numeric: tabular-nums; /* the live figure changes, so hold the width */
+}
+
+/* Sits under the counters, quieter still. Stacked in the rail, one line on mobile. */
+.promise {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--hush);
+}
+
+.monkey {
+  width: 44px;
+  height: auto;
+  flex: none;
+}
+
+/* Tucked under the name, pulled up against it so it reads as part of the mark. The rail
+   is pointer-events: none, so anything clickable in it has to opt back in. */
+.byline {
+  margin-top: -0.45rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--hush);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  pointer-events: auto;
+}
+
+.byline:hover {
+  color: var(--ink);
+}
+
+/* In the rail it is a line of text like everything above it. On a phone it becomes a
+   round floating button, because the band across the top has no room left. */
+.theme {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--hush);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  pointer-events: auto; /* the rail itself is inert, this is the exception */
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.theme:hover {
+  color: var(--ink);
+}
+
+.theme-icon {
+  display: none;
+}
+
+/* No room for a side rail on a phone. The mark becomes a solid band across the top and
+   the text takes the full width under it. */
+@media (max-width: 760px) {
+  :root {
+    --rail: 1.75rem;
+  }
+
+  body {
+    padding: 6.5rem 1.75rem 50vh;
+  }
+
+  .title {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.75rem;
+    background: var(--band);
+    color: var(--band-text);
+  }
+
+  /* Left on two lines like the rail. On one line the name grows towards the counters,
+     and the counters grow towards the name as the numbers get longer. */
+  .wordmark {
+    line-height: 1.5;
+  }
+
+  /* No invert filter any more: the stroke is currentColor, and on the band that
+     is already --band-text. */
+  .monkey {
+    width: 30px;
+  }
+
+  /* Three things across the band: the mark, then the promise, then the counts hard
+     right. Two auto margins do the spacing. Both stack onto two lines to stay narrow. */
+  .promise {
+    font-size: 0.55rem;
+    line-height: 1.5;
+    color: #8e8e99;
+  }
+
+  /* The counters absorb the gap after the name, so they and the promise end up together
+     at the right. Right aligned too: "online" and "visits" never change width, so the
+     numbers grow leftwards into the gap instead of pushing anything about. */
+  .counts {
+    margin-left: auto;
+    text-align: right;
+    font-size: 0.55rem;
+    line-height: 1.5;
+    color: #a8a8b3;
+  }
+
+  /* Anything too wordy for a phone. "3 authors online" becomes "3 online", and the
+     promise keeps the two lines that matter. The byline goes entirely: the band is full. */
+  .long,
+  .byline {
+    display: none;
+  }
+
+  /* Out of the band and onto the page as a round button, clear of the footer. Fixed
+     rather than absolute so the story scrolling underneath does not move it. */
+  .theme {
+    position: fixed;
+    right: 1.1rem;
+    bottom: calc(4.4rem + env(safe-area-inset-bottom, 0px));
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    color: var(--faint);
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 12%);
+  }
+
+  .theme-label {
+    display: none; /* the moon says it in less room */
+  }
+
+  .theme-icon {
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}
+
+main {
+  width: 100%;
+  max-width: 70ch;
+  margin: 0 auto;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.55rem);
+}
+
+/* ---------------------------------------------------------------- story */
+
+/* Justified, but not hyphenated. Splitting a word across lines would cut a thing that is
+   a single editable token, and at 70ch there are enough spaces per line to absorb the
+   stretch without rivers opening up. */
+.sheet {
+  text-align: justify;
+  line-height: 1.75;
+  letter-spacing: 0.002em;
+  word-spacing: 0.02em;
+}
+
+.story {
+  display: inline;
+}
+
+/* Three states, three colours. Black is permanent. */
+.word {
+  color: var(--ink);
+  transition: color 400ms ease;
+}
+
+/* Grey words are still inside their set window, so they can be changed. */
+.word.open {
+  color: var(--grey);
+  cursor: text;
+  border-bottom: 1px solid transparent;
+}
+
+.word.open:hover {
+  border-bottom-color: currentColor;
+}
+
+/* Last ten seconds. A hard on/off blink rather than a fade, because a soft pulse of grey
+   disappears into a page that is mostly black text already. The wash is what carries it. */
+.word.open.ending {
+  position: relative;
+  animation: ending 1s steps(1, end) infinite;
+}
+
+@keyframes ending {
+  0% {
+    color: var(--grey);
+    background-color: transparent;
+  }
+  50% {
+    color: var(--ink);
+    background-color: var(--wash);
+  }
+}
+
+/* The seconds left, printed above the word from the data-left attribute. Its colour is
+   set here rather than inherited, so the number holds steady while the word blinks. */
+.word.open.ending::after {
+  content: attr(data-left) "s";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  margin-bottom: -0.2em;
+  font-family: var(--mono);
+  font-size: 0.42em;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--magenta);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word.open.ending {
+    animation: none;
+    color: var(--ink);
+    background-color: var(--wash);
+  }
+}
+
+/* Kept words. The wash deepens with the number of people who marked it, so the sentences
+   most people agreed were worth saving are simply the darkest run on the page.
+   The rules apply to gap spans too, which is what keeps a run unbroken at the spaces. */
+.kept {
+  background-color: var(--keep-1);
+
+  /* Justified text lands box edges on fractional pixels, and the browser rounds each
+     background independently, which leaves a hairline of white at some boundaries. Every
+     painted box is stretched one pixel to the right and pulled back by the same amount,
+     so neighbours overlap instead of meeting. No layout change, no seam. */
+  padding-right: 1px;
+  margin-right: -1px;
+}
+
+.kept[data-marks="2"] {
+  background-color: var(--keep-2);
+}
+
+.kept[data-marks="3"] {
+  background-color: var(--keep-3);
+}
+
+.kept[data-marks="4"] {
+  background-color: var(--keep-4);
+}
+
+/* The Medium-style button that appears over a finished selection. */
+.mark {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  margin-top: -0.6rem;
+  padding: 0.45rem 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--page);
+  background: var(--ink);
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.mark:hover {
+  opacity: 0.85;
+}
+
+.mark:active {
+  transform: translate(-50%, -100%) scale(0.97);
+}
+
+/* Magenta words changed a moment ago and are waiting out their own cooldown. */
+.word.held {
+  color: var(--magenta);
+  cursor: default;
+}
+
+/* Nothing is clickable while you are waiting for your turn. */
+body.cooldown .word.open {
+  cursor: default;
+}
+
+body.cooldown .word.open:hover {
+  border-bottom-color: transparent;
+}
+
+/* ---------------------------------------------------------------- editing */
+
+.composer {
+  display: inline;
+}
+
+.input,
+.word-input {
+  font-family: var(--serif);
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  padding: 0;
+  margin: 0;
+  outline: none;
+  caret-color: var(--ink);
+}
+
+.input {
+  min-width: 0; /* the width is measured in app.js, in real pixels */
+}
+
+/* You are editing a grey word, so the text you type is grey too, and it occupies exactly
+   the space the word did. Any padding here shows up as a gap opening beside the word. */
+.word-input {
+  color: var(--grey);
+  padding: 0;
+  margin: 0;
+  border-bottom-color: currentColor;
+  vertical-align: baseline;
+}
+
+/* Still there while you wait, just inert. The banner says why. */
+.input:disabled {
+  cursor: default;
+}
+
+.input:focus,
+.word-input:focus {
+  border-bottom-color: var(--ink);
+}
+
+/* The whole thing explained along the bottom, in the order it happens to a word. The
+   first slot doubles as your own cooldown: two clocks in the paragraph read as one
+   confusing thing, so yours lives down here instead. */
+.legend {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.4rem;
+  padding: 0.85rem 1.5rem;
+  background: var(--page);
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+.rule {
+  margin-right: auto; /* the states sit together at the far end */
+  font-variant-numeric: tabular-nums;
+}
+
+.rule.waiting {
+  color: var(--ink);
+}
+
+/* On a wide screen the wrapper does nothing: the four keys stay direct flex items of the
+   footer, spaced like everything else. On a phone it becomes a row of its own. */
+.keys {
+  display: contents;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.explain {
+  font: inherit;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------- welcome */
+
+.welcome {
+  max-width: 34rem;
+  margin: auto;
+  padding: 2.2rem 2.2rem 1.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.welcome::backdrop {
+  background: var(--scrim);
+}
+
+.welcome h2 {
+  margin: 0 0 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+}
+
+.lede {
+  margin: 0 0 1.8rem;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.demo {
+  padding: 1.3rem 1.3rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+
+/* The demo line is the story's own type, so it reads as the same object. The words
+   already there are set, so they are black like set words anywhere else. Only the word
+   you add carries a state, and it colours itself. */
+.demo-line {
+  margin: 0 0 0.9rem;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* Inline at the end of the sentence, exactly like the composer on the real page, so the
+   demo teaches the actual gesture rather than a form that lives somewhere else. */
+.demo-form {
+  display: inline;
+}
+
+/* Author styles beat the browser's [hidden] rule, so restore it. */
+.demo-form[hidden] {
+  display: none;
+}
+
+/* On the changeable step the word is underlined all the time, not just on hover, so it
+   is obvious it is the thing to click. */
+.demo-editable {
+  border-bottom-color: currentColor !important;
+}
+
+.demo-swap {
+  width: 9ch;
+  border-bottom-color: var(--grey);
+  color: var(--grey);
+}
+
+/* On the highlight step the sentence is something you drag across, so say so. */
+.demo-selectable {
+  cursor: text;
+}
+
+.demo-input {
+  width: 11ch;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  padding: 0;
+  outline: none;
+}
+
+.demo-input::placeholder {
+  color: var(--rule);
+  opacity: 1;
+}
+
+.demo-input:focus {
+  border-bottom-color: var(--ink);
+}
+
+.demo-caption {
+  margin: 0.9rem 0 0;
+  /* Tall enough for the longest caption, so the card does not jump between steps. */
+  min-height: 3.4em;
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  color: var(--faint);
+}
+
+.demo-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.4rem;
+  min-height: 1.9rem; /* holds the space before a word has been typed */
+}
+
+.demo-step {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+.demo-next {
+  padding: 0.4rem 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.demo-next:hover {
+  color: var(--page);
+  background: var(--ink);
+}
+
+.welcome-go {
+  margin-top: 1.6rem;
+  padding: 0.6rem 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--page);
+  background: var(--ink);
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .welcome {
+    padding: 1.6rem 1.3rem 1.4rem;
+  }
+}
+
+/* Each swatch is the state it names, drawn the same way the words are. */
+.sw {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2px;
+}
+
+.sw-cooldown {
+  background: var(--magenta);
+}
+
+.sw-set {
+  background: var(--ink);
+}
+
+.sw-kept {
+  background: var(--keep-3);
+}
+
+.sw-setting {
+  animation: swatch 1s steps(1, end) infinite;
+}
+
+@keyframes swatch {
+  0% {
+    background: var(--grey);
+  }
+  50% {
+    background: var(--wash);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sw-setting {
+    animation: none;
+    background: var(--wash);
+  }
+}
+
+/* On a phone this is six things on a narrow strip, so it wraps to two rows. Tighten
+   everything so those two rows cost as little height as possible. */
+@media (max-width: 760px) {
+  .legend {
+    gap: 0.3rem 0.75rem;
+    padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    font-size: 0.58rem;
+    letter-spacing: 0.03em;
+  }
+
+  /* One row: your countdown, and the way to read about the rest. The four colours need
+     six words of labelling and there is no room for them, so they live in the modal. */
+  .keys {
+    display: none;
+  }
+
+  .sw {
+    width: 0.6rem;
+    height: 0.6rem;
+  }
+}
+
+
+
+/* ---------------------------------------------------------------- status */
+
+.status {
+  margin: 2.75rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--faint);
+  min-height: 1.2em;
+}
+
+.status.wrong {
+  color: var(--wrong);
+}
+
+/* ---------------------------------------------------------------- tooltip */
+
+.tip {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  margin-top: -0.5rem;
+  padding: 0.15rem 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--page);
+  background: var(--ink);
+  border-radius: 2px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 5; /* above the title, or a word on the first line loses its countdown */
+}

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>infinite monkeys</title>
+    <meta
+      name="description"
+      content="A story with infinitely many authors. You arrive, you read it, you change one word or add one. So does everyone else."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://infinitemonkeys.fun/" />
+    <meta property="og:title" content="infinite monkeys" />
+    <meta
+      property="og:description"
+      content="A story with infinitely many authors. You arrive, you read it, you change one word or add one. So does everyone else."
+    />
+    <meta property="og:image" content="https://infinitemonkeys.fun/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Before the stylesheet, on purpose. A module script runs after first paint, so the
+         page would flash white before turning dark. This is the one thing that has to be
+         inline and blocking. -->
+    <script>
+      try {
+        const saved = localStorage.getItem('monkeys.theme')
+        if (saved) document.documentElement.dataset.theme = saved
+      } catch {}
+    </script>
+
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <h1 class="title">
+      <!-- Inline rather than an <img> so the stroke can be currentColor and follow the
+           theme. public/monkey.svg is the same drawing, kept for use elsewhere. -->
+      <svg
+        class="monkey"
+        viewBox="0 0 72 52"
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M2 42h68" />
+        <path d="M43 42v-3l5-4h16v7" />
+        <path d="M46 39h15" />
+        <path d="M57 35v-9" />
+        <path d="M16 42c-3-12 1-20 11-22" />
+        <path d="M16 42c7-1 10-6 10-11" />
+        <circle cx="32" cy="18" r="5" />
+        <circle cx="29" cy="13" r="1.8" />
+        <path d="M36 20c2.5.6 2.5 3.4 0 4" />
+        <path d="M28 23c1 7 9 12 18 14" />
+        <path d="M16 41c-7 1-10-3-7-6 2-2 5-1 4 2" />
+      </svg>
+      <span class="wordmark"><span>infinite</span> <span>monkeys</span></span>
+      <a class="byline" href="https://x.com/habibicode" target="_blank" rel="noopener me"
+        >by Nicolas</a
+      >
+      <!-- "authors" drops away on a phone, leaving "3 online", which is all the room
+           there is once the promise and the visit count are on the same band. -->
+      <span class="counts">
+        <span><span id="live-count">–</span> <span id="live-noun" class="long">authors</span>
+          online</span>
+        <span><span id="visit-count">–</span> <span id="visit-label">visits</span></span>
+      </span>
+      <span class="promise">
+        <span class="long">No account</span>
+        <span>No data</span>
+        <span>No tracking</span>
+      </span>
+      <button id="theme" class="theme" type="button" aria-label="Switch between light and dark">
+        <span id="theme-label" class="theme-label">dark</span>
+        <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+          <path
+            d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"
+          />
+        </svg>
+      </button>
+    </h1>
+    <main>
+      <div class="sheet"><span id="story" class="story"></span><form
+          id="composer"
+          class="composer"
+          autocomplete="off"
+        ><input
+            id="input"
+            class="input"
+            type="text"
+            spellcheck="false"
+            autocapitalize="off"
+            aria-label="Add a word"
+          /></form></div>
+      <p id="status" class="status"></p>
+    </main>
+    <button id="mark" class="mark" type="button" hidden>Highlight</button>
+    <footer class="legend">
+      <span id="rule" class="rule" role="status"></span>
+      <span class="keys">
+        <span class="key"><i class="sw sw-cooldown"></i>cooldown</span>
+        <span class="key"><i class="sw sw-setting"></i>setting</span>
+        <span class="key"><i class="sw sw-set"></i>set</span>
+        <span class="key"><i class="sw sw-kept"></i>highlight</span>
+      </span>
+      <button id="explain" class="explain" type="button">how it works</button>
+    </footer>
+
+    <dialog id="welcome" class="welcome">
+      <h2>how it works</h2>
+      <p class="lede">
+        One word or punctuation mark per turn. Add or replace.<br />
+        After 10 minutes, it sets forever.
+      </p>
+
+      <div class="demo">
+        <!-- The space sits outside the span on purpose. Inside it, every background and
+             underline would start half a space early. The real story keeps its gaps in
+             their own spans so a highlight can run across them, which is the opposite
+             need and the opposite solution. -->
+        <div class="demo-line" id="demo-line"><span class="word">The</span><span
+            class="dgap"
+          > </span><span class="word">quiet</span><span class="dgap"> </span><span
+            class="word"
+          >monkey</span><span class="dgap"> </span><span
+            id="demo-word"
+            class="word"
+            hidden
+          ></span> <form id="demo-form" class="demo-form" autocomplete="off"><input
+              id="demo-input"
+              class="demo-input"
+              type="text"
+              spellcheck="false"
+              autocapitalize="off"
+              placeholder="type a word"
+              aria-label="Try a word"
+            /></form></div>
+        <p id="demo-caption" class="demo-caption">
+          Type a word above and see how the story gets built.
+        </p>
+
+        <div class="demo-nav">
+          <span id="demo-step" class="demo-step"></span>
+          <button id="demo-next" class="demo-next" type="button" hidden>next</button>
+        </div>
+      </div>
+
+      <!-- Inside the dialog on purpose: a fixed-position element outside it would render
+           underneath, because an open dialog sits in the browser's top layer. -->
+      <button id="demo-mark" class="mark" type="button" hidden>Highlight</button>
+
+      <button id="welcome-go" class="welcome-go" type="button">start writing</button>
+    </dialog>
+    <div id="tip" class="tip" hidden></div>
+    <script type="module" src="/app.js"></script>
+    <script type="module" src="/welcome.js"></script>
+  </body>
+</html>
